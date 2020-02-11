@@ -1,15 +1,15 @@
 library flutter_reorderable_list;
 
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
-
+import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
-import 'dart:async';
 import 'dart:ui' show lerpDouble;
+
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 
 typedef bool ReorderItemCallback(Key draggedItem, Key newPosition);
 typedef void ReorderCompleteCallback(Key draggedItem);
@@ -32,6 +32,7 @@ class ReorderableList extends StatefulWidget {
     @required this.onReorder,
     this.onReorderDone,
     this.cancellationToken,
+    this.showShadow = true,
   }) : super(key: key);
 
   final Widget child;
@@ -40,6 +41,8 @@ class ReorderableList extends StatefulWidget {
   final ReorderCompleteCallback onReorderDone;
 
   final CancellationToken cancellationToken;
+
+  final bool showShadow;
 
   @override
   State<StatefulWidget> createState() => new _ReorderableListState();
@@ -152,7 +155,10 @@ class _ReorderableListState extends State<ReorderableList>
   Widget build(BuildContext context) {
     return new Stack(
       fit: StackFit.passthrough,
-      children: <Widget>[widget.child, new _DragProxy()],
+      children: <Widget>[
+        widget.child,
+        new _DragProxy(showShadow: widget.showShadow)
+      ],
     );
   }
 
@@ -474,6 +480,7 @@ class _ReorderableListState extends State<ReorderableList>
 
   bool _scheduledRebuild = false;
   Key _lastReportedKey;
+
   //
 
   final _items = new HashMap<Key, _ReorderableItemState>();
@@ -595,6 +602,10 @@ class _ReorderableItemState extends State<ReorderableItem> {
 //
 
 class _DragProxy extends StatefulWidget {
+  final bool showShadow;
+
+  const _DragProxy({Key key, this.showShadow = true}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => new _DragProxyState();
 }
@@ -658,24 +669,25 @@ class _DragProxyState extends State<_DragProxy> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                Opacity(
-                    opacity: _shadowOpacity,
-                    child: Container(
-                      height: decorationHeight,
-                      decoration: BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(
-                                  color: Color(0x50000000),
-                                  width: 1.0 / mq.devicePixelRatio)),
-                          gradient: LinearGradient(
-                              begin: Alignment(0.0, -1.0),
-                              end: Alignment(0.0, 1.0),
-                              colors: <Color>[
-                                Color(0x00000000),
-                                Color(0x10000000),
-                                Color(0x30000000)
-                              ])),
-                    )),
+                if (widget.showShadow)
+                  Opacity(
+                      opacity: _shadowOpacity,
+                      child: Container(
+                        height: decorationHeight,
+                        decoration: BoxDecoration(
+                            border: Border(
+                                bottom: BorderSide(
+                                    color: Color(0x50000000),
+                                    width: 1.0 / mq.devicePixelRatio)),
+                            gradient: LinearGradient(
+                                begin: Alignment(0.0, -1.0),
+                                end: Alignment(0.0, 1.0),
+                                colors: <Color>[
+                                  Color(0x00000000),
+                                  Color(0x10000000),
+                                  Color(0x30000000)
+                                ])),
+                      )),
                 IgnorePointer(
                   child: MediaQuery.removePadding(
                     context: context,
@@ -684,24 +696,25 @@ class _DragProxyState extends State<_DragProxy> {
                     removeBottom: true,
                   ),
                 ),
-                Opacity(
-                    opacity: _shadowOpacity,
-                    child: Container(
-                      height: decorationHeight,
-                      decoration: BoxDecoration(
-                          border: Border(
-                              top: BorderSide(
-                                  color: Color(0x50000000),
-                                  width: 1.0 / mq.devicePixelRatio)),
-                          gradient: LinearGradient(
-                              begin: Alignment(0.0, -1.0),
-                              end: Alignment(0.0, 1.0),
-                              colors: <Color>[
-                                Color(0x30000000),
-                                Color(0x10000000),
-                                Color(0x00000000)
-                              ])),
-                    )),
+                if (widget.showShadow)
+                  Opacity(
+                      opacity: _shadowOpacity,
+                      child: Container(
+                        height: decorationHeight,
+                        decoration: BoxDecoration(
+                            border: Border(
+                                top: BorderSide(
+                                    color: Color(0x50000000),
+                                    width: 1.0 / mq.devicePixelRatio)),
+                            gradient: LinearGradient(
+                                begin: Alignment(0.0, -1.0),
+                                end: Alignment(0.0, 1.0),
+                                colors: <Color>[
+                                  Color(0x30000000),
+                                  Color(0x10000000),
+                                  Color(0x00000000)
+                                ])),
+                      )),
               ],
             ),
             rect: new Rect.fromLTWH(0.0, _offset - decorationHeight,
