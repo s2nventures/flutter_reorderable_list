@@ -113,13 +113,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                   itemBuilder: (BuildContext context) =>
                       <PopupMenuItem<DraggingMode>>[
-                        const PopupMenuItem<DraggingMode>(
-                            value: DraggingMode.iOS,
-                            child: Text('iOS-like dragging')),
-                        const PopupMenuItem<DraggingMode>(
-                            value: DraggingMode.Android,
-                            child: Text('Android-like dragging')),
-                      ],
+                    const PopupMenuItem<DraggingMode>(
+                        value: DraggingMode.iOS,
+                        child: Text('iOS-like dragging')),
+                    const PopupMenuItem<DraggingMode>(
+                        value: DraggingMode.Android,
+                        child: Text('Android-like dragging')),
+                  ],
                 ),
               ],
               pinned: true,
@@ -185,7 +185,7 @@ class Item extends StatelessWidget {
           color: placeholder ? null : Colors.white);
     }
 
-    // For iOS dragging mdoe, there will be drag handle on the right that triggers
+    // For iOS dragging mode, there will be drag handle on the right that triggers
     // reordering; For android mode it will be just an empty container
     Widget dragHandle = draggingMode == DraggingMode.iOS
         ? ReorderableListener(
@@ -216,7 +216,7 @@ class Item extends StatelessWidget {
                     padding:
                         EdgeInsets.symmetric(vertical: 14.0, horizontal: 14.0),
                     child: Text(data.title,
-                        style: Theme.of(context).textTheme.subhead),
+                        style: Theme.of(context).textTheme.subtitle1),
                   )),
                   // Triggers the reordering
                   dragHandle,
